@@ -11,15 +11,14 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\AuthController;
 use App\Models\Appointment;
-
-
+use Illuminate\Support\Facades\DB; // Import the DB facade
 
 // Public Routes (Accessible to Guests)
 Route::middleware('guest')->group(function () {
-    Route::get('/landingpage', function () { 
-        return view('landingpage'); 
+    Route::get('/landingpage', function () {
+        return view('landingpage');
     })->name('landingpage');
-    
+
     Route::post('/landingpage', [LandingpageController::class, 'landingpage']);
 
     Route::get('signup', [SignupController::class, 'signup'])->name('signup');
@@ -35,23 +34,29 @@ Route::middleware('auth')->group(function () {
 
     Route::get('user', [AppointmentController::class, 'user'])->name('user');
     Route::post('user', [AppointmentController::class, 'submit'])->name('user.submit');
-    
+
     Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments');
     Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
     Route::post('/appointments/update-status/{id}', [AppointmentController::class, 'updateStatus'])->name('appointments.updateStatus');
 
+    Route::get('/api/booked-slots', [AppointmentController::class, 'getBookedSlots']);
+
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
-    Route::get('/store-report', [ReportsController::class, 'storeReport'])->name('store_report');
-    Route::post('/store-report', [ReportsController::class, 'storeReport']);
     Route::get('/history', [HistoryController::class, 'index'])->name('history');
     Route::get('/history/filter', [HistoryController::class, 'filter'])->name('history.filter');
+    Route::post('/reports/store', [ReportsController::class, 'store'])->name('store_report');
+    Route::get('/reports', [ReportsController::class, 'index'])->name('reports.index');
+    Route::post('/reports/{id}/edit', [ReportsController::class, 'update'])->name('reports.update');
+    Route::delete('/reports/{id}', [ReportsController::class, 'destroy'])->name('reports.destroy');
+
+
 });
 
 Route::post('/appointments/{id}/upload', [AppointmentController::class, 'upload'])->name('appointments.upload');
 Route::post('/upload-image', [AppointmentController::class, 'upload'])->name('image.upload');
 Route::post('/upload-proof', [AppointmentController::class, 'uploadProof'])->name('upload.proof');
-Route::delete('/appointments/{id}', [AppointmentController::class, 'delete'])->name('appointments.delete');
+Route::delete('/appointments/delete/{id}', [AppointmentController::class, 'destroy'])->name('appointments.delete');
 Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments');
 Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
 Route::post('/appointments/update-status/{id}', [AppointmentController::class, 'updateStatus'])->name('appointments.updateStatus');
@@ -63,3 +68,6 @@ Route::post('/appointments/reschedule/{id}', [AppointmentController::class, 'res
 Route::post('/appointments/reschedule', [AppointmentController::class, 'reschedule'])->name('appointments.reschedule');
 Route::post('appointments/{id}/delete', [AppointmentController::class, 'delete'])->name('appointments.delete');
 Route::post('/appointments/update-status', [AppointmentController::class, 'updateStatus'])->name('appointments.updateStatus');
+Route::get('/get-booked-times', [AppointmentController::class, 'getBookedTimes']);
+
+Route::post('/fetch-booked-times', [AppointmentController::class, 'fetchBookedTimes'])->name('fetch.booked.times');
