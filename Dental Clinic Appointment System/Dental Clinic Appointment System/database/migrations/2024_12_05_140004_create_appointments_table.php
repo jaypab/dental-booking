@@ -18,12 +18,10 @@ return new class extends Migration
             $table->string('amount');
             $table->date('date');
             $table->string('time');
-            $table->string('file')->nullable();
             $table->string('status')->default('Pending');
             $table->timestamps();
         });
     }
-
 
     public function down()
     {
